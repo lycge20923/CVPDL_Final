@@ -24,9 +24,9 @@ import pickle
 import glob
 import traceback as tb
 import math
-import argparse
 import time
 from moviepy.editor import *
+import shutil
 
 from im2wav_utils import *
 from models.hparams import CLIP_VERSION
@@ -275,8 +275,14 @@ def Combine(video_path, audio_path):
     video = VideoFileClip(video_path)
     video = video.set_audio(audio)
     video.write_videofile(video_path)
-    os.rename(video_path, video_path.split('/')[-1])
-
+    after_pth = video_path.split('/')[-1][:-4]+'_with_audio.mp4'
+    os.rename(video_path, after_pth)
+    try:
+        shutil.rmtree('audio')
+        shutil.rmtree('video_CLIP')
+        shutil.rmtree('videos')
+    except:
+        pass
 
 def run(video_path):
     global global_info
@@ -321,8 +327,10 @@ def run(video_path):
 
     os.makedirs(global_info["save_CLIP_dir"], exist_ok=True)
     os.makedirs(global_info["videos_dir"], exist_ok=True)
+    ori_path = global_info['video']
     video_path = os.path.join(global_info["videos_dir"],global_info['video'])
-    os.rename(global_info['video'], video_path)
+    #os.rename(global_info['video'], video_path)
+    os.system(f'cp "{ori_path}" "{video_path}"')
 
     global_info["videos"] = glob.glob(os.path.join(global_info["videos_dir"], '*.mp4'))
     global_info["videos_num"] = len(global_info["videos"])
