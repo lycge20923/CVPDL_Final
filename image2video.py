@@ -28,4 +28,8 @@ def image_to_video(image_path, output_path):
     generator = torch.manual_seed(23)
     frames = pipe(image, decode_chunk_size=8, generator=generator, num_frames=25, fps=6).frames[0]
 
-    export_to_video(frames, output_path, fps=7)
+    export_to_video(frames, output_path, fps=6)
+
+if __name__ == '__main__':
+    img_path = '/home/r12922169/course/test/CVPDL_Final/aaa.jpg'
+    image_to_video(img_path, 'bbb.mp4')
