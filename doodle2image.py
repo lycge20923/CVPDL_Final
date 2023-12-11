@@ -1,6 +1,5 @@
 from diffusers import StableDiffusionXLAdapterPipeline, T2IAdapter, EulerAncestralDiscreteScheduler, AutoencoderKL
 from diffusers.utils import load_image, make_image_grid
-from controlnet_aux.lineart import LineartDetector
 import torch
 import torchvision.transforms.functional as TF
 import numpy as np
@@ -100,8 +99,8 @@ def doodle2image(in_dir, style_name, prompt, out_dir):
         image=image,
         num_inference_steps=30,
         generator=generator,
-        guidance_scale=7.5,
-        adapter_conditioning_scale=0.8,
-        adapter_conditioning_factor=0.8
+        guidance_scale=30,
+        adapter_conditioning_scale=0.6,
+        adapter_conditioning_factor=0.6
     ).images[0]
     gen_images.save(out_dir)
