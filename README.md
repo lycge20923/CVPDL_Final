@@ -17,5 +17,5 @@
   ```
 * 執行：
   ```
-  python3 main.py --doodle_path {your doodle path} --style '{your style}' --prompt 'your prompt'
+  python3 main.py --doodle_path {your doodle path} --style '{your style}' --prompt '{your prompt}'
   ```
