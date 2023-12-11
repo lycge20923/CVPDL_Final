@@ -12,7 +12,7 @@
     pip install numba==0.58.1
     pip install librosa==0.10.1
     pip install huggingface-hub==0.19.4
-    pip install -U typing-extensions diffusers transformers accelerate xformers
+    pip install -U diffusers transformers accelerate xformers
     pip install -U controlnet_aux==0.0.7
   ```
 * 執行：
