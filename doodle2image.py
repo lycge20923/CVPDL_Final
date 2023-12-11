@@ -101,7 +101,7 @@ def doodle2image(in_dir, style_name, prompt, out_dir):
         num_inference_steps=30,
         generator=generator,
         guidance_scale=7.5,
-        adapter_conditioning_scale=0.8
-        #adapter_conditioning_factor=0.8
+        adapter_conditioning_scale=0.8,
+        adapter_conditioning_factor=0.8
     ).images[0]
     gen_images.save(out_dir)
