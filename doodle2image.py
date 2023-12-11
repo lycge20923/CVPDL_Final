@@ -98,10 +98,10 @@ def doodle2image(in_dir, style_name, prompt, out_dir):
         prompt=prompt,
         negative_prompt=negative_prompt,
         image=image,
-        num_inference_steps=30,
+        num_inference_steps=50,
         generator=generator,
-        guidance_scale=7.5,
-        adapter_conditioning_scale=0.8,
-        adapter_conditioning_factor=0.8
+        guidance_scale=30,
+        adapter_conditioning_scale=0.5,
+        adapter_conditioning_factor=0.65
     ).images[0]
     gen_images.save(out_dir)
