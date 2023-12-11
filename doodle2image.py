@@ -2,6 +2,9 @@ from diffusers import StableDiffusionXLAdapterPipeline, T2IAdapter, EulerAncestr
 from diffusers.utils import load_image, make_image_grid
 from controlnet_aux.lineart import LineartDetector
 import torch
+import torchvision.transforms.functional as TF
+import numpy as np
+import random
 from typing import Tuple
 
 
@@ -65,27 +68,40 @@ def doodle2image(in_dir, style_name, prompt, out_dir):
         p, n = styles.get(style_name, styles[DEFAULT_STYLE_NAME])
         return p.replace("{prompt}", positive), n + negative
     # load adapter
-    adapter = T2IAdapter.from_pretrained(
-    "TencentARC/t2i-adapter-sketch-sdxl-1.0", torch_dtype=torch.float16, varient="fp16"
-    ).to("cuda")
-
-    # load euler_a scheduler
-    model_id = 'stabilityai/stable-diffusion-xl-base-1.0'
-    euler_a = EulerAncestralDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
-    vae=AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
-    pipe = StableDiffusionXLAdapterPipeline.from_pretrained(
-        model_id, vae=vae, adapter=adapter, scheduler=euler_a, torch_dtype=torch.float16, variant="fp16", 
-    ).to("cuda")
-    pipe.enable_xformers_memory_efficient_attention()
-
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+        adapter = T2IAdapter.from_pretrained(
+            "TencentARC/t2i-adapter-sketch-sdxl-1.0", torch_dtype=torch.float16, variant="fp16"
+        )
+        scheduler = EulerAncestralDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
+        pipe = StableDiffusionXLAdapterPipeline.from_pretrained(
+            model_id,
+            vae=AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16),
+            adapter=adapter,
+            scheduler=scheduler,
+            torch_dtype=torch.float16,
+            variant="fp16",
+        )
+        pipe.to(device)
+    else:
+        pipe = None
+    MAX_SEED = np.iinfo(np.int32).max
+    seed = random.randint(0, MAX_SEED)
+    generator = torch.Generator(device="cuda").manual_seed(seed)
     image = load_image(in_dir)
+    image = image.convert("RGB")
+    image = TF.to_tensor(image) > 0.5
+    image = TF.to_pil_image(image.to(torch.float32))
     prompt, negative_prompt = apply_style(style_name, prompt)
     gen_images = pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
         image=image,
         num_inference_steps=30,
-        adapter_conditioning_scale=0.8,
-        guidance_scale=7.5, 
+        generator=generator,
+        guidance_scale=7.5,
+        adapter_conditioning_scale=0.8
+        #adapter_conditioning_factor=0.8
     ).images[0]
     gen_images.save(out_dir)
