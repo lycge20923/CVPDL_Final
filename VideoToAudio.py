@@ -273,10 +273,9 @@ def save_samples(global_info, sliding_window=False):
 def Combine(video_path, audio_path):
     audio = AudioFileClip(audio_path)
     video = VideoFileClip(video_path)
-    video = video.set_audio(audio)
-    video.write_videofile(video_path)
+    video_new = video.set_audio(audio)
     after_pth = video_path.split('/')[-1][:-4]+'_with_audio.mp4'
-    os.rename(video_path, after_pth)
+    video_new.write_videofile(after_pth)
     try:
         shutil.rmtree('audio')
         shutil.rmtree('video_CLIP')

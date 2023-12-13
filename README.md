@@ -1,6 +1,6 @@
 # CVPDL_Final
 
-### 環境
+### 環境(遠端執行model)
 * 安裝ffpmeg，ubuntu為例：sudo apt install ffmpeg
 * 安裝 `lib`相關的套件
   ```
@@ -34,4 +34,17 @@
 * 執行：
   ```
   python3 main.py --doodle_path {your doodle path} --style '{your style}' --prompt '{your prompt}'
+  ```
+
+### 環境(本機執行GUI介面)
+* python=3.11
+* 套件
+
+  ```
+    pip install paramiko tk pathlib python-dotenv Pillow
+  ```
+* 執行：
+
+  ```
+  python gui.py
   ```
